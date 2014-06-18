@@ -4,3 +4,4 @@
 #but no .py files
 !.gitignore
 !*.py
+!*.md
