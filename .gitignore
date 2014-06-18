@@ -3,4 +3,4 @@
 
 #but no .py files
 !.gitignore
-!.py
+!*.py
