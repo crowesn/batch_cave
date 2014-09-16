@@ -76,7 +76,7 @@ class utilityFunctions:
 		print x
 		mrkFileName = re.sub('.mrc', '.mrk', x)
 		print "\n<Breaking MARC file>\n"
-		subprocess.call(['C:\\%s\\MarcEdit 5.0\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrkFileName, '-break'])
+		subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrkFileName, '-break'])
 		x = open(mrkFileName).read()
 		return x
 
@@ -85,13 +85,13 @@ class utilityFunctions:
 		print x
 		mrkFileName = re.sub('.mrc', '.mrk', x)
 		print "\n<Breaking MARC file>\n"
-		subprocess.call(['C:\\%s\\MarcEdit 5.0\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrkFileName, '-break', '-marc8'])
+		subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrkFileName, '-break', '-marc8'])
 		x = open(mrkFileName).read()
 		return x
 
 	def MarcEditMakeFile(self, x):
 		print '\n<Compiling file to MARC>\n'
-		subprocess.call(['C:\\%s\\MarcEdit 5.0\\cmarcedit.exe' % MarcEditDir, '-s', filenameNoExt + '_OUT.mrk', '-d', filenameNoExt + '_OUT.mrc', '-make'])
+		subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', filenameNoExt + '_OUT.mrk', '-d', filenameNoExt + '_OUT.mrc', '-make'])
 		return x
 	
 	def MarcEditSaveToMRK(self, x):
@@ -103,7 +103,7 @@ class utilityFunctions:
 	def MarcEditXmlToMarc(self, x):
 		mrcFileName = re.sub('.xml', '.mrc', x)
 		print '\n<Converting from XML to MARC>\n'
-		subprocess.call(['C:\\%s\\MarcEdit 5.0\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrcFileName, '-xmlmarc', '-marc8', '-mxslt', 'C:\\%s\\MarcEdit 5.0\\xslt\\MARC21XML2Mnemonic_plugin.xsl' % MarcEditDir])
+		subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrcFileName, '-xmlmarc', '-marc8', '-mxslt', 'C:\\%s\\MarcEdit 6\\xslt\\MARC21XML2Mnemonic_plugin.xsl' % MarcEditDir])
 		return mrcFileName
 
 	def Standardize856_956(self, *args):
@@ -814,6 +814,29 @@ class batchEdits:
 		x = re.sub('(?m)^=856(.*)', '=956\\1$3Knovel :', x)
 		x = utilities.DeleteLocGov(x)
 		x = utilities.Standardize856_956(x, 'Knovel')
+		x = utilities.CharRefTrans(x)
+		x = utilities.MarcEditSaveToMRK(x)
+		x = utilities.MarcEditMakeFile(x)
+		return x
+
+	def ER_OCLC_WCS_ClinKey(self, x, name='ER-OCLC-WCS-ClinKey'):
+		print '\nRunning change script '+ name + '\n'
+		x = utilities.MarcEditBreakFile(x)
+		# Delete 856 fields with ... 
+		x = re.sub('(?m)^=856.*www.clinicalkey.com.au.*\n', '', x)
+		x = re.sub('(?m)^=856.*www.lib.umn.edu/slog.phtm.*\n', '', x)
+		#Insert 002, 003, 730, 949 before supplied 003
+		x = re.sub('(?m)^=003', r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;\n=730  0\\$aClinicalKey.$5OCU\n=003  ER-OCLC-WCS-ClinKey\n=002  OCLC-WCS-ClinKey\n=003', x)
+		x = re.sub('\$3ClinicalKey', '', x)
+		x = re.sub('\$3E-Book through ClinicalKey', '', x)
+		#Change hyperlink tag from 856 to 956, add $3
+		#x = re.sub('(?m)^=856(.*)', '=956\\1$3ClinicalKey :', x)
+		# Change hyperlink tag from 856 to 956
+		x = re.sub('(?m)^=856', '=956', x)
+		#x = re.sub('(?m)^(=956.*)', '\\1$zConnect to resource online', x)
+		x = utilities.AddEresourceGMD(x)
+		x = utilities.Standardize856_956(x, 'ClinicalKey')
+		x = utilities.DeleteLocGov(x)
 		x = utilities.CharRefTrans(x)
 		x = utilities.MarcEditSaveToMRK(x)
 		x = utilities.MarcEditMakeFile(x)
@@ -1669,6 +1692,7 @@ class batchEdits:
 		x = utilities.CharRefTrans(x)
 		x = utilities.MarcEditSaveToMRK(x)
 		x = utilities.MarcEditMakeFile(x)
+		return x
 
 reStart = ''
 
@@ -1683,7 +1707,7 @@ while reStart == '' or reStart == 'y':
 	if platformbit == '32bit':
 		MarcEditDir = 'Program Files'
 	elif platformbit == '64bit':
-		MarcEditDir = 'Program Files (x86)'
+		MarcEditDir = 'Program Files'
 
 	#browse to input file and open
 	filename = BrowseFiles()
