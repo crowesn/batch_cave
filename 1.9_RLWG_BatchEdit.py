@@ -808,10 +808,41 @@ class batchEdits:
 	def ER_OCLC_WCS_Knovel(self, x, name='ER-OCLC-WCS-Knovel'):
 		print '\nRunning change script '+ name + '\n'
 		x = utilities.MarcEditBreakFile(x)
+		x = re.sub('(?m)^=856.*assets.cambridge.org.*\n', '', x)
+		x = re.sub('(?m)^=856.*books\.google\.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*bvbr\.bib-bvb\.de.*\n', '', x)
+		x = re.sub('(?m)^=856.*catalog.hathitrust.org.*\n', '', x)
+		x = re.sub('(?m)^=856.*dx\.doi\.org.*\n', '', x)
+		x = re.sub('(?m)^=856.*encompass\.library\.cornell.edu.*\n', '', x)
+		x = re.sub('(?m)^=856.*ezlibproxy1.ntu.edu.sg.*\n', '', x)
+		x = re.sub('(?m)^=856.*ezproxy.lib.uwstout.edu.*\n', '', x)
+		x = re.sub('(?m)^=856.*ezproxy.library.dal.ca.*\n', '', x)
+		x = re.sub('(?m)^=856.*libproxy.uregina.ca.*\n', '', x)
+		x = re.sub('(?m)^=856.*library\.stanford\.edu.*\n', '', x)
+		x = re.sub('(?m)^=856.*libresources.sait.ab.ca.*\n', '', x)
+		x = re.sub('(?m)^=856.*proquest.safaribooksonline.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*public.eblib.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*public\.eblib\.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*roquest.tech.safaribooksonline.de.*\n', '', x)
+		x = re.sub('(?m)^=856.*search.ebscohost.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*site\.ebrary\.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www.accessengineeringlibrary.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www.sciencedirect.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www.springerlink.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www3\.interscience\.wiley\.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www\.clinicalkey\.com\.au.*\n', '', x)
+		x = re.sub('(?m)^=856.*www\.contentreserve\.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www\.e-streams\.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www\.lib\.umn\.edu.*\n', '', x)
+		x = re.sub('(?m)^=856.*www\.myilibrary\.com.*\n', '', x)
+		x = re.sub('(?m)^=856.*www\.netlibrary\.com.*\n', '', x)
 		#Insert 002, 003, 730, 949 before supplied 003
 		x = re.sub('(?m)^=003', r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;\n=730  0\\$aKnovel library.$5OCU\n=003  ER-OCLC-WCS-Knovel\n=002  OCLC-WCS-Knovel\n=003', x)
-		#Change hyperlink tag from 856 to 956
-		x = re.sub('(?m)^=856(.*)', '=956\\1$3Knovel :', x)
+		x = re.sub('\$3Knovel', '', x)
+		#Change hyperlink tag from 856 to 956, add $3
+		#x = re.sub('(?m)^=856(.*)', '=956\\1$3Knovel :', x)
+		# Change hyperlink tag from 856 to 956, without adding $3
+		x = re.sub('(?m)^=856', '=956', x)
 		x = utilities.DeleteLocGov(x)
 		x = utilities.Standardize856_956(x, 'Knovel')
 		x = utilities.CharRefTrans(x)
@@ -831,7 +862,7 @@ class batchEdits:
 		x = re.sub('\$3E-Book through ClinicalKey', '', x)
 		#Change hyperlink tag from 856 to 956, add $3
 		#x = re.sub('(?m)^=856(.*)', '=956\\1$3ClinicalKey :', x)
-		# Change hyperlink tag from 856 to 956
+		# Change hyperlink tag from 856 to 956, without adding $3
 		x = re.sub('(?m)^=856', '=956', x)
 		#x = re.sub('(?m)^(=956.*)', '\\1$zConnect to resource online', x)
 		x = utilities.AddEresourceGMD(x)
