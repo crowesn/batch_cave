@@ -609,6 +609,8 @@ class batchEdits:
 	def ER_NBER(self, x, name='ER-NBER'):
 		print '\nRunning change script '+ name + '\n'
 		x = utilities.MarcEditBreakFile(filename)
+		# NBER has begun using two 856 fields. DELETE 856 fields with www.nber.org ... RETAIN 856 fields with dx.doi.org 
+		x = re.sub('(?m)^=856.*www.nber.org.*\n', '', x)
 		#change 001 to 002, retain first letter and insert initial code
 		#x = re.sub('(?m)^=001  (.*)', '=002  nber \\1', x)
 		x = re.sub('(?m)^=001  ', '=002  nber_', x) 
@@ -793,17 +795,26 @@ class batchEdits:
 		x = utilities.MarcEditBreakFile(x)
 		#Insert 002, 003, 730, 949 before supplied 008
 		x = re.sub('(?m)^=008', r'=949  \\1$lolink$rs$t99\n=949  \\\\$a*bn=bolin;\n=730  0\\$aOxford scholarship online.$5OCU\n=003  ER-O/L-OSO\n=002  O/L-OSO\n=008', x)
+		x = re.sub('\$3Oxford Scholarship', '', x)
+		x = re.sub('\$3OhioLINK', '', x)
 		#edit proxy URLs
-		x = re.sub('(?m)\$zConnect to electronic resource at Oxfordscholarship\.com$', '$3Oxford Scholarship Online :$zConnect to resource online', x)
-		x = re.sub('(?m)\$zConnect to electronic resource at Oxfordscholarship\.com from Off Campus$', '$3Oxford Scholarship Online :$zConnect to resource online (Off Campus Access)', x)
+		x = re.sub('\$zConnect to resource', '$zConnect to resource online', x)
 		x = re.sub('(?m)^(=856.*rave.*?)(\$zConnect to resource online$)', '\\1$3OhioLINK :\\2', x)
+		x = re.sub('(?m)^(=856.*doi.*?)(\$zConnect to resource online$)', '\\1$3Oxford Scholarship Online :\\2', x)
+		x = re.sub('\(off-campus\)', '(Off Campus Access)', x)
+		#x = re.sub('\$zConnect to resource', '$3Oxford Scholarship Online :$zConnect to resource online', x)
+		#x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
+		#x = re.sub('\(off-campus\)', '(Off Campus Access)', x)
+		#x = re.sub('(?m)\$zConnect to electronic resource at Oxfordscholarship\.com$', '$3Oxford Scholarship Online :$zConnect to resource online', x)
+		#x = re.sub('(?m)\$zConnect to electronic resource at Oxfordscholarship\.com from Off Campus$', '$3Oxford Scholarship Online :$zConnect to resource online (Off Campus Access)', x)
 		#x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
 		x = utilities.DeleteLocGov(x)
-		#x = utilities.Standardize856_956(x, 'Oxford Scholarship Online')
+		x = utilities.Standardize856_956(x, )
 		x = utilities.CharRefTrans(x)
 		x = utilities.MarcEditSaveToMRK(x)
 		x = utilities.MarcEditMakeFile(x)
 		return x
+
 
 	def ER_OCLC_WCS_Knovel(self, x, name='ER-OCLC-WCS-Knovel'):
 		print '\nRunning change script '+ name + '\n'
@@ -1012,14 +1023,17 @@ class batchEdits:
 		x = utilities.MarcEditBreakFile(x)
 		#Insert 002, 003, 730, 949 before supplied 003
 		x = re.sub('(?m)^=003', r'=949  \\1$lolink$rs$t99\n=949  \\\\$a*bn=bolin;\n=730  0\\$aSafari books online.$5OCU\n=003  ER-O/L-Safari\n=002  O/L-Safari\n=003', x)
+		x = re.sub('\$3Safari Books Online', '', x)
 		#edit proxy URLs
-		x = re.sub('\$zConnect to this resource online', '$3Safari (ProQuest) :$zConnect to resource online', x)
-		x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
-		x = re.sub('\$zConnect to electronic resource', '$3Safari(ProQuest) :$zConnect to resource online', x)
-		x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
+		x = re.sub('\$zConnect to resource', '$3Safari (ProQuest) :$zConnect to resource online', x)
+		#x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
+		x = re.sub('\(off-campus\)', '(Off Campus Access)', x)
+		#x = re.sub('\$zConnect to this resource online', '$3Safari (ProQuest) :$zConnect to resource online', x)
+		#x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
+		#x = re.sub('\$zConnect to electronic resource', '$3Safari(ProQuest) :$zConnect to resource online', x)
 		#Change hyperlink tag from 856 to 956
 		x = re.sub('(?m)^=856', '=956', x)
-		#x = utilities.Standardize856_956(x, 'ProQuest')
+		# = utilities.Standardize856_956(x, )
 		x = utilities.DeleteLocGov(x)
 		x = utilities.CharRefTrans(x)
 		x = utilities.MarcEditSaveToMRK(x)
@@ -1338,12 +1352,13 @@ class batchEdits:
 		x = utilities.MarcEditBreakFile(x)
 		#Insert 002, 003, 730, 949 before supplied 008
 		x = re.sub('(?m)^=008', r'=949  \\1$lolink$rs$t99\n=949  \\\\$a*bn=bolin;\n=003  ER-O/L-Wiley-InterSci\n=002  O/L-Wiley-InterSci\n=730  0\\$aWiley online library.$5OCU\n=730  0\\$aWiley InterScience ebooks.$5OCU\n=008', x)
+		x = re.sub('\$3Wiley Online Library', '', x)
 		#edit proxy URLs
-		x = re.sub('(?m)^=856  40\$3Wiley Online Library', '=856  40$3Wiley Online Library :', x)
+		#x = re.sub('(?m)^=856  40\$3Wiley Online Library', '=856  40$3Wiley Online Library :', x)
 		x = re.sub('(?m)\$zConnect to resource$', '$zConnect to resource online', x)
 		x = re.sub('\$zConnect to resource \(off-campus\)', '$zConnect to resource online (Off Campus Access)', x)
 		#standardizelinkfield,deleteTOCs,translatecharreferences,makeandsavefile
-		#x = utilities.Standardize856_956(x, 'Wiley Online')
+		x = utilities.Standardize856_956(x, 'Wiley Online Library')
 		x = utilities.DeleteLocGov(x)
 		x = utilities.CharRefTrans(x)
 		x = utilities.AddEresourceGMD(x)
