@@ -132,6 +132,9 @@ class utilityFunctions:
 				#move leading $3 to EOF
 				line = re.sub('(=[8|9]56  ..)(\$3.*?)(\$u.*)', '\\1\\3\\2', line)
 				if len(args) > 1 and type(args[1]) == str:
+					if re.search('\$3', line):
+						line = re.sub('(\$3)(.*)', '\\1{0} (\\2)'.format(args[1]), line)
+					else:
 						line = line + '$3{0} :'.format(args[1])
 				#add standard $z
 				line = line + '$zConnect to resource online'
@@ -795,13 +798,13 @@ class batchEdits:
 		x = utilities.MarcEditBreakFile(x)
 		#Insert 002, 003, 730, 949 before supplied 008
 		x = re.sub('(?m)^=008', r'=949  \\1$lolink$rs$t99\n=949  \\\\$a*bn=bolin;\n=730  0\\$aOxford scholarship online.$5OCU\n=003  ER-O/L-OSO\n=002  O/L-OSO\n=008', x)
-		x = re.sub('\$3Oxford Scholarship', '', x)
+		x = re.sub('\$3Oxford Scholarship Online', '', x)
 		x = re.sub('\$3OhioLINK', '', x)
 		#edit proxy URLs
 		x = re.sub('\$zConnect to resource', '$zConnect to resource online', x)
 		x = re.sub('(?m)^(=856.*rave.*?)(\$zConnect to resource online$)', '\\1$3OhioLINK :\\2', x)
-		x = re.sub('(?m)^(=856.*doi.*?)(\$zConnect to resource online$)', '\\1$3Oxford Scholarship Online :\\2', x)
-		x = re.sub('\(off-campus\)', '(Off Campus Access)', x)
+		x = re.sub('(?m)^(=856.*doi.*?)(\$zConnect to resource online)', '\\1$3Oxford Scholarship Online :\\2', x)
+		x = re.sub('(?m)\(off-campus\)', '(Off Campus Access)', x)
 		#x = re.sub('\$zConnect to resource', '$3Oxford Scholarship Online :$zConnect to resource online', x)
 		#x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
 		#x = re.sub('\(off-campus\)', '(Off Campus Access)', x)
@@ -809,7 +812,7 @@ class batchEdits:
 		#x = re.sub('(?m)\$zConnect to electronic resource at Oxfordscholarship\.com from Off Campus$', '$3Oxford Scholarship Online :$zConnect to resource online (Off Campus Access)', x)
 		#x = re.sub('\(off-campus access\)', '(Off Campus Access)', x)
 		x = utilities.DeleteLocGov(x)
-		x = utilities.Standardize856_956(x, )
+		#x = utilities.Standardize856_956(x, )
 		x = utilities.CharRefTrans(x)
 		x = utilities.MarcEditSaveToMRK(x)
 		x = utilities.MarcEditMakeFile(x)
@@ -1372,7 +1375,7 @@ class batchEdits:
 		#change 001 to 002, retain first letter and insert initial code
 		x = re.sub('(?m)^=001  ', '=002  Psycbook_', x)
 		#ADD 003, 730, 949 before supplied 008
-		x = re.sub('(?m)^=008', r'=949  \\1$luint$rs$t99\n=949  \\\\$a*b3=z;bn=buint;\n=730  0\\$aPsycBOOKS.$5OCU\n=730  0\\$aAPA PsycBOOKS.$5OCU\n=003  ER-APA-PBK\n=008', x)
+		x = re.sub('(?m)^=040', r'=949  \\1$luint$rs$t99\n=949  \\\\$a*b3=z;bn=buint;\n=730  0\\$aPsycBOOKS.$5OCU\n=730  0\\$aAPA PsycBOOKS.$5OCU\n=003  ER-APA-PBK\n=040', x)
 		#remove Table of contents URLs
 		x = re.sub('(?m)^=856.*Table of contents.*\n', '', x)
 		#remove $3Full text available
