@@ -1341,6 +1341,7 @@ class batchEdits:
 		#standardizelinkfield,deleteTOCs,translatecharreferences,makeandsavefile
 		x = utilities.Standardize856_956(x)
 		x = utilities.CharRefTrans(x)
+		x = utilities.AddEresourceGMD(x)
 		x = utilities.MarcEditSaveToMRK(x)
 		x = utilities.MarcEditMakeFile(x)
 		return x
@@ -1351,10 +1352,71 @@ class batchEdits:
 		#change001to002
 		x = re.sub('(?m)^=001', '=002', x)
 		#Insert 003,730,949 before supplied 008
-		x = re.sub('(?m)^=008',r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;b3=z;\n=003  ER-ASP-CTV\n=710  2\\$aAlexander Street Press\n=730  0\\$aAlexander Street Counseling.$5OCU\n=730  0\\$aCounseling and therapy in video.$5OCU\n=008', x)
+		x = re.sub('(?m)^=008',r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;b3=z;\n=003  ER-ASP-CTV\n=710  2\\$aAlexander Street Press\n=730  0\\$aAlexander Street Press.$pAlexander Street Counseling.$5OCU\n=730  0\\$aAlexander Street Press.$pCounseling and therapy in video.$5OCU\n=008', x)
 		#standardizelinkfield,deleteTOCs,translatecharreferences,makeandsavefile
 		x = utilities.Standardize856_956(x, 'Alexander Street Press')
 		x = utilities.CharRefTrans(x)
+		x = utilities.AddEresourceGMD(x)
+		x = utilities.MarcEditSaveToMRK(x)
+		x = utilities.MarcEditMakeFile(x)
+		return x
+
+	def ER_ASP_EDIV(self, x, name='ER-ASP-EDIV'):
+		#breaktheMARCfile
+		x = utilities.MarcEditBreakFileTranslateToMarc8(x)
+		#change001to002
+		x = re.sub('(?m)^=001', '=002', x)
+		#Insert 003,730,949 before supplied 008
+		x = re.sub('(?m)^=008',r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;b3=z;\n=003  ER-ASP-EDIV\n=710  2\\$aAlexander Street Press\n=730  0\\$aAlexander Street Press.$pEducation in video.$5OCU\n=008', x)
+		#standardizelinkfield,deleteTOCs,translatecharreferences,makeandsavefile
+		x = utilities.Standardize856_956(x, 'Alexander Street Press')
+		x = utilities.CharRefTrans(x)
+		x = utilities.AddEresourceGMD(x)
+		x = utilities.MarcEditSaveToMRK(x)
+		x = utilities.MarcEditMakeFile(x)
+		return x
+
+	def ER_ASP_GLTC(self, x, name='ER-ASP-GLTC'):
+		#breaktheMARCfile
+		x = utilities.MarcEditBreakFileTranslateToMarc8(x)
+		#change001to002
+		x = re.sub('(?m)^=001', '=002', x)
+		#Insert 003,730,949 before supplied 008
+		x = re.sub('(?m)^=008',r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;b3=z;\n=003  ER-ASP-GLTC\n=710  2\\$aAlexander Street Press\n=730  0\\$aAlexander Street Press.$pLGBT thought and culture.$5OCU\n=008', x)
+		#standardizelinkfield,deleteTOCs,translatecharreferences,makeandsavefile
+		x = utilities.Standardize856_956(x, 'Alexander Street Press')
+		x = utilities.CharRefTrans(x)
+		x = utilities.AddEresourceGMD(x)
+		x = utilities.MarcEditSaveToMRK(x)
+		x = utilities.MarcEditMakeFile(x)
+		return x
+
+	def ER_ASP_WASI(self, x, name='ER-ASP-WASI'):
+		#breaktheMARCfile
+		x = utilities.MarcEditBreakFileTranslateToMarc8(x)
+		#change001to002
+		x = re.sub('(?m)^=001', '=002', x)
+		#Insert 003,730,949 before supplied 008
+		x = re.sub('(?m)^=008',r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;b3=z;\n=003  ER-ASP-WASI\n=710  2\\$aAlexander Street Press\n=730  0\\$aAlexander Street Press.$pWomen and social movements, international.$5OCU\n=008', x)
+		#standardizelinkfield,deleteTOCs,translatecharreferences,makeandsavefile
+		x = utilities.Standardize856_956(x, 'Alexander Street Press')
+		x = utilities.CharRefTrans(x)
+		x = utilities.AddEresourceGMD(x)
+		x = utilities.MarcEditSaveToMRK(x)
+		x = utilities.MarcEditMakeFile(x)
+		return x
+
+	def ER_ASP_WASS(self, x, name='ER-ASP-WASS'):
+		#breaktheMARCfile
+		x = utilities.MarcEditBreakFileTranslateToMarc8(x)
+		#change001to002
+		x = re.sub('(?m)^=001', '=002', x)
+		#Insert 003,730,949 before supplied 008
+		x = re.sub('(?m)^=008',r'=949  \\1$luint$rs$t99\n=949  \\\\$a*bn=buint;b3=z;\n=003  ER-ASP-WASS\n=710  2\\$aAlexander Street Press\n=730  0\\$aAlexander Street Press.$pWomen and social movements: scholar\'s edition.$5OCU\n=008', x)
+		#standardizelinkfield,deleteTOCs,translatecharreferences,makeandsavefile
+		x = utilities.Standardize856_956(x, 'Alexander Street Press')
+		x = utilities.CharRefTrans(x)
+		x = utilities.AddEresourceGMD(x)
 		x = utilities.MarcEditSaveToMRK(x)
 		x = utilities.MarcEditMakeFile(x)
 		return x
