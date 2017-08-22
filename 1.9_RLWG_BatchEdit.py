@@ -523,6 +523,16 @@ class utilityFunctions:
         #return values in place unless they match the byField, sort matches
         return([w if not re.match(byField, w) else next(condIter) for w in lines])
 
+    def sort007(self, x):
+        rex = utilities.marc2Recs(x)
+        rexSorted = []
+        for r in rex:
+            r = utilities.sortMarcRec(r, byField='=007')
+            r = '\n'.join(r)
+            rexSorted.append(r)
+        x = '\n\n'.join(rexSorted)
+        return x
+
 class batchEdits:
 
     def ER_EAI_2nd(self, x, name='ER-EAI-2ND'):
@@ -2198,25 +2208,10 @@ class batchEdits:
         x = utilities.MarcEditMakeFile(x)
         return x
 
-    def ER_Order007(self, x, name='ER-order007'):
-        print '\nRunning change script '+ name + '\n'
-        x = utilities.MarcEditBreakFile(filename)
-        x = utilities.CharRefTrans(x)
-        x = utilities.MarcEditSaveToMRK(x)
-        x = utilities.MarcEditMakeFile(x)
-        return x
-
     def ER_Order007(self, x, name='ER-Order007'):
         print '\nRunning change script '+ name + '\n'
         x = utilities.MarcEditBreakFile(filename)
-        #divide string into list of records
-        rex = utilities.marc2Recs(x)
-        rexSorted = []
-        for r in rex:
-            r = utilities.sortMarcRec(r, byField='=007')
-            r = '\n'.join(r)
-            rexSorted.append(r)
-        x = '\n\n'.join(rexSorted)
+        x = utilities.sort007(x)
         x = utilities.CharRefTrans(x)
         x = utilities.MarcEditSaveToMRK(x)
         x = utilities.MarcEditMakeFile(x)

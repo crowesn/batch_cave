@@ -523,6 +523,16 @@ class utilityFunctions:
         #return values in place unless they match the byField, sort matches
         return([w if not re.match(byField, w) else next(condIter) for w in lines])
 
+    def sort007(self, x):
+        rex = utilities.marc2Recs(x)
+        rexSorted = []
+        for r in rex:
+            r = utilities.sortMarcRec(r, byField='=007')
+            r = '\n'.join(r)
+            rexSorted.append(r)
+        x = '\n\n'.join(rexSorted)
+        return x
+
 class batchEdits:
 
     def ER_EAI_2nd(self, x, name='ER-EAI-2ND'):
@@ -645,7 +655,7 @@ class batchEdits:
         #change 001 to 002, retain first letter and insert initial code
         #x = re.sub('(?m)^=001  (.*)', '=002  nber \\1', x)
         x = re.sub('(?m)^=001  ', '=002  nber_', x) 
-        #ADD 003, 006, 007, 533, 730, 949 before supplied 008
+        #ADD 003, 006, , 533, 730, 949 before supplied 008
         x = re.sub('(?m)^=008', r'=949  \\1$luint$rs$t99\n=949  \\\\$a*b3=z;bn=buint;\n=830  \\0$aWorking paper series (National Bureau of Economic Research : Online)\n=730  0\\$aNBER working paper series online.$5OCU\n=533  \\\\$aElectronic reproduction.$bCambridge, Mass.$cNational Bureau of Economic Research,$d200-$e1 electronic text : PDF file.$fNBER working paper series.$nAccess restricted to patrons at subscribing institutions\n=007  cr\\mnu\n=006  m\\\\\\\\\\\\\\\\d\\\\\\\\\\\\\\\\\n=003  ER-NBER\n=008', x)
         # 530 field, change Hardcopy to Print
         x = re.sub('(?m)^(=530.*)Hardcopy(.*)', '\\1Print\\2', x)
@@ -2200,14 +2210,7 @@ class batchEdits:
     def ER_Order007(self, x, name='ER-Order007'):
         print '\nRunning change script '+ name + '\n'
         x = utilities.MarcEditBreakFile(filename)
-        #divide string into list of records
-        rex = utilities.marc2Recs(x)
-        rexSorted = []
-        for r in rex:
-            r = utilities.sortMarcRec(r, byField='=007')
-            r = '\n'.join(r)
-            rexSorted.append(r)
-        x = '\n\n'.join(rexSorted)
+        x = utilities.sort007(x)
         x = utilities.CharRefTrans(x)
         x = utilities.MarcEditSaveToMRK(x)
         x = utilities.MarcEditMakeFile(x)
