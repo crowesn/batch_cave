@@ -35,7 +35,6 @@ def BrowseFiles():#open file explorer
 class utilityFunctions:
 
     def listChangeScripts(self, BatchEdits):
-        
         num = 0
         ChangeScriptsDict = {}
         for i in dir(BatchEdits)[:-2]:
@@ -76,34 +75,35 @@ class utilityFunctions:
         print x
         mrkFileName = re.sub('.mrc', '.mrk', x)
         print "\n<Breaking MARC file>\n"
-        subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrkFileName, '-break'])
+        subprocess.call([MonoBin,MarcEditBin,"-s", x, "-d", mrkFileName,"-break"])
         x = open(mrkFileName).read()
         return x
+
 
     def MarcEditBreakFileTranslateToMarc8(self, x):
         #break the file; output .mrk
         print x
         mrkFileName = re.sub('.mrc', '.mrk', x)
         print "\n<Breaking MARC file>\n"
-        subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrkFileName, '-break', '-marc8'])
+        subprocess.call([MonoBin,MarcEditBin,"-s", x, "-d",mrkFileName,"-break","-marc8"])
         x = open(mrkFileName).read()
         return x
 
     def MarcEditMakeFile(self, x):
         print '\n<Compiling file to MARC>\n'
-        subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', filenameNoExt + '_OUT.mrk', '-d', filenameNoExt + '_OUT.mrc', '-make'])
+        subprocess.call([MonoBin,MarcEditBin,"-s", filenameNoExt+"_OUT.mrk","-d",filenameNoExt + "_OUT.mrc","-make"])
         return x
-    
+
     def MarcEditSaveToMRK(self, x):
         outfile = open(filenameNoExt + '_OUT.mrk', 'w')
         outfile.write(x)
         outfile.close()
         return
-    
+
     def MarcEditXmlToMarc(self, x):
         mrcFileName = re.sub('.xml', '.mrc', x)
         print '\n<Converting from XML to MARC>\n'
-        subprocess.call(['C:\\%s\\MarcEdit 6\\cmarcedit.exe' % MarcEditDir, '-s', x, '-d', mrcFileName, '-xmlmarc', '-marc8', '-mxslt', 'C:\\%s\\MarcEdit 6\\xslt\\MARC21XML2Mnemonic_plugin.xsl' % MarcEditDir])
+        subprocess.call([MonoBin,MarcEditBin,"-s", x, "-d",mrcFileName,"-xmlmarc","-marc8", "-mxslt","/opt/marcedit/xslt/MARC21XML2Mnemonic_plugin.xsl"])
         return mrcFileName
 
     def Standardize856_956(self, *args):
@@ -431,7 +431,7 @@ class utilityFunctions:
             '&uuml;' : ['&uuml;', '{uml}u', '{232}u'],
             '&zcaron;' : ['&zcaron;', '{caron}z', '{233}z'],
             }
-        
+
         keys = dict.keys(CharRefTransTable)
         for key in range(len(keys)):
             x = re.sub(CharRefTransTable[keys[key]][0], CharRefTransTable[keys[key]][1], x)
@@ -457,7 +457,7 @@ class utilityFunctions:
         x = re.sub('(?m)^=856.*http://d-nb.info.*\n', '', x)
         x = re.sub('(?m)^=856.*http://deposit.d-nb.de/cgi-bin.*\n', '', x)
         return x
-        
+
     def DedupRecords(self, x):
         x = x.split('\n\n')
         x = filter(None, x)
@@ -2146,7 +2146,6 @@ class batchEdits:
         return x
 
     def ER_CC_Music(self, x, name='ER-CC-Music'):
-    
         print '\nRunning change script '+ name + '\n'
         x = utilities.MarcEditBreakFile(filename)
         # delete supplied 949 field
@@ -2166,7 +2165,7 @@ class batchEdits:
 
     def ER_SRMO(self, x, name='ER-SRMO'):
         print '\nRunning change script '+ name + '\n'
-        x = utilities.MarcEditBreakFile(x)    
+        x = utilities.MarcEditBreakFile(x)
         #Change =001 field to =002, and add =003
         x = re.sub('(?m)^=001  (.*)', '=002  srmo_\\1\n=003  ER-SRMO', x)
         #ADD 730, 949 fields before supplied 008
@@ -2198,14 +2197,6 @@ class batchEdits:
         x = utilities.MarcEditMakeFile(x)
         return x
 
-    def ER_Order007(self, x, name='ER-order007'):
-        print '\nRunning change script '+ name + '\n'
-        x = utilities.MarcEditBreakFile(filename)
-        x = utilities.CharRefTrans(x)
-        x = utilities.MarcEditSaveToMRK(x)
-        x = utilities.MarcEditMakeFile(x)
-        return x
-
     def ER_Order007(self, x, name='ER-Order007'):
         print '\nRunning change script '+ name + '\n'
         x = utilities.MarcEditBreakFile(filename)
@@ -2222,6 +2213,7 @@ class batchEdits:
         x = utilities.MarcEditMakeFile(x)
         return x
 
+
 reStart = ''
 
 while reStart == '' or reStart == 'y':
@@ -2229,13 +2221,11 @@ while reStart == '' or reStart == 'y':
     BatchEdits = batchEdits()
     utilities = utilityFunctions()
 
-    #get bit environment
-    global MarcEditDir
-    platformbit = platform.architecture()[0]
-    if platformbit == '32bit':
-        MarcEditDir = 'Program Files'
-    elif platformbit == '64bit':
-        MarcEditDir = 'Program Files'
+    global MonoBin
+    MonoBin = "/usr/bin/mono"
+
+    global MarcEditBin
+    MarcEditBin = '/opt/marcedit/cmarcedit.exe'
 
     #browse to input file and open
     filename = BrowseFiles()
